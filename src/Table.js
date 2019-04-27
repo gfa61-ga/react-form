@@ -1,90 +1,125 @@
-import React from "react";
+import React, { useContext } from "react";
+import { MyAppContext } from "./App"
 
-function Table(props) {
+function Table() {
 
-    let { fieldNames, editedRowId, editedRowValues, rows } = props;
-    return (
-      <table
-        className="table table-bordered table-hover"
-        id="tab_logic"
-      >
-        <thead>
-          <tr>
-            <th className="text-center"> # </th>
-            {fieldNames.map((fieldName, i) => (
-              <th
-                key={i}
-                className="text-center"
-              >
-                {fieldName}
-              </th>
-            ))}
-          </tr>
-        </thead>
+  const [
+    editedRowId, setEditedRowId,
+    editedRowValues, setEditedRowValues,
+    rows, setRows,
+    fieldNames
+  ] = useContext(MyAppContext);
 
-        <tbody>
-          {rows.map((item, idx) => (
-            <tr
-              key={idx}
+  const handleEditedRowChange = () => e => {
+    const { name, value } = e.target;
+    setEditedRowValues({
+      ...editedRowValues,
+      [name]: value
+    });
+  };
+
+  const handleEditSpecificRow = (idx) => () => {
+    const editedRowId = idx
+    setEditedRowId(editedRowId)
+    setEditedRowValues(rows[idx])
+  }
+
+  const handleSaveSpecificRow = idx => e => {
+    const currentRows = [...rows];
+    currentRows[idx] = {...editedRowValues};
+    setRows(currentRows)
+    setEditedRowId("")
+    setEditedRowValues({})
+  };
+
+  const handleRemoveSpecificRow = (idx) => () => {
+    const currentRows = [...rows];
+    currentRows.splice(idx, 1);
+    setRows(currentRows)
+    setEditedRowId("")
+  }
+
+  return (
+    <table
+      className="table table-bordered table-hover"
+      id="tab_logic"
+    >
+      <thead>
+        <tr>
+          <th className="text-center"> # </th>
+          {fieldNames.map((fieldName, i) => (
+            <th
+              key={i}
+              className="text-center"
             >
-              <td>
-                {idx}
-              </td>
+              {fieldName}
+            </th>
+          ))}
+        </tr>
+      </thead>
 
-              {fieldNames.map((fieldName, i) => (
-                <td
-                  key={i}
-                >
-                  {editedRowId !=="" && editedRowId === idx ? (
-                    <input
-                      type="text"
-                      name={fieldName}
-                      value={editedRowValues[fieldName]}
-                      onChange={props.handleEditedRowChange()}
-                      className="form-control"
-                    />
-                  ) : (
-                    <input
-                      disabled
-                      value={rows[idx][fieldName]}
-                      className="form-control"
-                    />
-                  )}
-                </td>
-              ))}
+      <tbody>
+        {rows.map((item, idx) => (
+          <tr
+            key={idx}
+          >
+            <td>
+              {idx}
+            </td>
 
-              <td>
-                {editedRowId === "" || editedRowId !== idx ? (
-                  <button
-                    className="btn btn-outline-danger btn-sm"
-                    onClick={props.handleEditSpecificRow(idx)}
-                  >
-                    Edit
-                  </button>
+            {fieldNames.map((fieldName, i) => (
+              <td
+                key={i}
+              >
+                {editedRowId !=="" && editedRowId === idx ? (
+                  <input
+                    type="text"
+                    name={fieldName}
+                    value={editedRowValues[fieldName]}
+                    onChange={handleEditedRowChange()}
+                    className="form-control"
+                  />
                 ) : (
-                  <button
-                    className="btn btn-outline-danger btn-sm"
-                    onClick={props.handleSaveSpecificRow(idx)}
-                  >
-                    Save
-                  </button>
+                  <input
+                    disabled
+                    value={rows[idx][fieldName]}
+                    className="form-control"
+                  />
                 )}
               </td>
+            ))}
 
-              <td>
+            <td>
+              {editedRowId === "" || editedRowId !== idx ? (
                 <button
                   className="btn btn-outline-danger btn-sm"
-                  onClick={props.handleRemoveSpecificRow(idx)}
+                  onClick={handleEditSpecificRow(idx)}
                 >
-                  Remove
+                  Edit
                 </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    );
+              ) : (
+                <button
+                  className="btn btn-outline-danger btn-sm"
+                  onClick={handleSaveSpecificRow(idx)}
+                >
+                  Save
+                </button>
+              )}
+            </td>
 
+            <td>
+              <button
+                className="btn btn-outline-danger btn-sm"
+                onClick={handleRemoveSpecificRow(idx)}
+              >
+                Remove
+              </button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
 }
 
 export default Table;

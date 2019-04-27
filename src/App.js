@@ -1,10 +1,14 @@
 import React from "react";
 import Table from "./Table";
-import {useState} from "react";
+import { useState, createContext } from "react";
+
+export const MyAppContext = createContext([0, () => {}]);
 
 function App() {
   const [editedRowId, setEditedRowId] = useState("");
+
   const [editedRowValues, setEditedRowValues] = useState({});
+
   const [rows, setRows] = useState([{
       name: "",
       mobile: "",
@@ -12,42 +16,13 @@ function App() {
       ebg: "",
     }]
   );
+
   const fieldNames = Object.keys({
     name: "",
     mobile: "",
     test: "",
     ebg: "",
   });
-
-  const handleEditedRowChange = () => e => {
-    const { name, value } = e.target;
-    setEditedRowValues({
-      ...editedRowValues,
-      [name]: value
-    });
-  };
-
-  const handleEditSpecificRow = (idx) => () => {
-    const editedRowId = idx
-    setEditedRowId(editedRowId)
-    setEditedRowValues(rows[idx])
-  }
-
-  const handleSaveSpecificRow = idx => e => {
-    const currentRows = [...rows];
-    currentRows[idx] = {...editedRowValues};
-    setRows(currentRows)
-    setEditedRowId("")
-    setEditedRowValues({})
-  };
-
-  const handleRemoveSpecificRow = (idx) => () => {
-    const currentRows = [...rows];
-    currentRows.splice(idx, 1);
-    setRows(currentRows)
-    setEditedRowId("")
-  }
-
 
   const handleAddRow = () => {
     const item = {};
@@ -65,22 +40,20 @@ function App() {
     setEditedRowValues({})
   };
 
-
   return (
     <div>
       <div className="container">
         <div className="row clearfix">
           <div className="col-md-12 column">
-            <Table
-              fieldNames={fieldNames}
-              editedRowId={editedRowId}
-              editedRowValues={editedRowValues}
-              rows={rows}
-              handleEditedRowChange={handleEditedRowChange}
-              handleEditSpecificRow={handleEditSpecificRow}
-              handleSaveSpecificRow={handleSaveSpecificRow}
-              handleRemoveSpecificRow={handleRemoveSpecificRow}
-            />
+
+            <MyAppContext.Provider value={[
+              editedRowId, setEditedRowId,
+              editedRowValues, setEditedRowValues,
+              rows, setRows,
+              fieldNames
+            ]}>
+              <Table />
+            </MyAppContext.Provider>
 
             <button
               onClick={handleAddRow}
