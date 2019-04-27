@@ -1,114 +1,104 @@
 import React from "react";
 import Table from "./Table";
+import {useState} from "react";
 
-class App extends React.Component {
-  state = {
-    editedRowId: "",
-    editedRowValues: {},
-    rows: [{
+function App() {
+  const [editedRowId, setEditedRowId] = useState("");
+  const [editedRowValues, setEditedRowValues] = useState({});
+  const [rows, setRows] = useState([{
       name: "",
       mobile: "",
       test: "",
       ebg: "",
     }]
-  };
+  );
+  const fieldNames = Object.keys({
+    name: "",
+    mobile: "",
+    test: "",
+    ebg: "",
+  });
 
-  fieldNames = Object.keys(this.state.rows[0]);
-
-  handleEditedRowChange = () => e => {
+  const handleEditedRowChange = () => e => {
     const { name, value } = e.target;
-    let editedRowValues = {
-      ...this.state.editedRowValues,
+    setEditedRowValues({
+      ...editedRowValues,
       [name]: value
-    };
-    this.setState({
-      editedRowValues
     });
   };
 
-  handleEditSpecificRow = (idx) => () => {
+  const handleEditSpecificRow = (idx) => () => {
     const editedRowId = idx
-    this.setState({
-      editedRowId,
-      editedRowValues: this.state.rows[idx]
-    })
+    setEditedRowId(editedRowId)
+    setEditedRowValues(rows[idx])
   }
 
-  handleSaveSpecificRow = idx => e => {
-    const rows = [...this.state.rows];
-    rows[idx] = {...this.state.editedRowValues};
-    this.setState({
-      rows,
-      editedRowId: "",
-      editedRowValues: {}
-    });
+  const handleSaveSpecificRow = idx => e => {
+    const currentRows = [...rows];
+    currentRows[idx] = {...editedRowValues};
+    setRows(currentRows)
+    setEditedRowId("")
+    setEditedRowValues({})
   };
 
-  handleRemoveSpecificRow = (idx) => () => {
-    const rows = [...this.state.rows]
-    rows.splice(idx, 1)
-    this.setState({
-      rows,
-      editedRowId: ""
-    })
+  const handleRemoveSpecificRow = (idx) => () => {
+    const currentRows = [...rows];
+    currentRows.splice(idx, 1);
+    setRows(currentRows)
+    setEditedRowId("")
   }
 
 
-  handleAddRow = () => {
+  const handleAddRow = () => {
     const item = {};
-    this.fieldNames.map((fieldName) => (
+    fieldNames.map((fieldName) => (
       item[fieldName]=""
     ))
-    this.setState({
-      rows: [...this.state.rows, item],
-      editedRowId: this.state.rows.length,
-      editedRowValues: item
-    });
+    setRows([...rows, item])
+    setEditedRowId(rows.length)
+    setEditedRowValues(item)
   };
 
-  handleRemoveRow = () => {
-    this.setState({
-      rows: this.state.rows.slice(0, -1),
-      editedRowId: "",
-      editedRowValues: {}
-    });
+  const handleRemoveRow = () => {
+    setRows(rows.slice(0, -1))
+    setEditedRowId("")
+    setEditedRowValues({})
   };
 
-  render() {
-    return (
-      <div>
-        <div className="container">
-          <div className="row clearfix">
-            <div className="col-md-12 column">
-              <Table
-                fieldNames={this.fieldNames}
-                editedRowId={this.state.editedRowId}
-                editedRowValues={this.state.editedRowValues}
-                rows={this.state.rows}
-                handleEditedRowChange={this.handleEditedRowChange}
-                handleEditSpecificRow={this.handleEditSpecificRow}
-                handleSaveSpecificRow={this.handleSaveSpecificRow}
-                handleRemoveSpecificRow={this.handleRemoveSpecificRow}
-              />
 
-              <button
-                onClick={this.handleAddRow}
-                className="btn btn-primary"
-              >
-                Add Row
-              </button>
-              <button
-                onClick={this.handleRemoveRow}
-                className="btn btn-danger float-right"
-              >
-                Delete Last Row
-              </button>
-            </div>
+  return (
+    <div>
+      <div className="container">
+        <div className="row clearfix">
+          <div className="col-md-12 column">
+            <Table
+              fieldNames={fieldNames}
+              editedRowId={editedRowId}
+              editedRowValues={editedRowValues}
+              rows={rows}
+              handleEditedRowChange={handleEditedRowChange}
+              handleEditSpecificRow={handleEditSpecificRow}
+              handleSaveSpecificRow={handleSaveSpecificRow}
+              handleRemoveSpecificRow={handleRemoveSpecificRow}
+            />
+
+            <button
+              onClick={handleAddRow}
+              className="btn btn-primary"
+            >
+              Add Row
+            </button>
+            <button
+              onClick={handleRemoveRow}
+              className="btn btn-danger float-right"
+            >
+              Delete Last Row
+            </button>
           </div>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
 }
 
 export default App;
