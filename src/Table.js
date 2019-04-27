@@ -1,8 +1,8 @@
 import React from "react";
 
-class Table extends React.Component {
-  render() {
-    let { fieldNames, editedRowId, editedRowValues, rows } = this.props;
+function Table(props) {
+
+    let { fieldNames, editedRowId, editedRowValues, rows } = props;
     return (
       <table
         className="table table-bordered table-hover"
@@ -14,17 +14,9 @@ class Table extends React.Component {
             {fieldNames.map((fieldName, i) => (
               <th
                 key={i}
+                className="text-center"
               >
-              <input
-                disabled
-                value={fieldName}
-                className="form-control"
-                style={{
-                  textAlign: "center",
-                  textDecoration: "underline",
-                  color: "red"
-                }}
-              />
+                {fieldName}
               </th>
             ))}
           </tr>
@@ -48,7 +40,7 @@ class Table extends React.Component {
                       type="text"
                       name={fieldName}
                       value={editedRowValues[fieldName]}
-                      onChange={this.props.handleEditedRowChange()}
+                      onChange={props.handleEditedRowChange()}
                       className="form-control"
                     />
                   ) : (
@@ -65,14 +57,14 @@ class Table extends React.Component {
                 {editedRowId === "" || editedRowId !== idx ? (
                   <button
                     className="btn btn-outline-danger btn-sm"
-                    onClick={this.props.handleEditSpecificRow(idx)}
+                    onClick={props.handleEditSpecificRow(idx)}
                   >
                     Edit
                   </button>
                 ) : (
                   <button
                     className="btn btn-outline-danger btn-sm"
-                    onClick={this.props.handleSaveSpecificRow(idx)}
+                    onClick={props.handleSaveSpecificRow(idx)}
                   >
                     Save
                   </button>
@@ -82,7 +74,7 @@ class Table extends React.Component {
               <td>
                 <button
                   className="btn btn-outline-danger btn-sm"
-                  onClick={this.props.handleRemoveSpecificRow(idx)}
+                  onClick={props.handleRemoveSpecificRow(idx)}
                 >
                   Remove
                 </button>
@@ -92,7 +84,7 @@ class Table extends React.Component {
         </tbody>
       </table>
     );
-  }
+
 }
 
 export default Table;
