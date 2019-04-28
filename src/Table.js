@@ -61,7 +61,7 @@ function Table() {
       <tbody>
         {rows.map((item, idx) => (
           <tr
-            key={idx}
+            key={item.id}
           >
             <td>
               {idx}
@@ -71,7 +71,7 @@ function Table() {
               <td
                 key={i}
               >
-                {editedRowId !=="" && editedRowId === idx ? (
+                {editedRowId === idx ? (
                   <input
                     type="text"
                     name={fieldName}
@@ -90,7 +90,7 @@ function Table() {
             ))}
 
             <td>
-              {editedRowId === "" || editedRowId !== idx ? (
+              {editedRowId !== idx ? (
                 <button
                   className="btn btn-outline-danger btn-sm"
                   onClick={handleEditSpecificRow(idx)}

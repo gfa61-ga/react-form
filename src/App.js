@@ -1,8 +1,9 @@
 import React from "react";
 import Table from "./Table";
 import { useState, createContext } from "react";
+import uuid from 'uuid/v4';
 
-export const MyAppContext = createContext([0, () => {}]);
+export const MyAppContext = createContext();
 
 function App() {
   const [editedRowId, setEditedRowId] = useState("");
@@ -10,6 +11,7 @@ function App() {
   const [editedRowValues, setEditedRowValues] = useState({});
 
   const [rows, setRows] = useState([{
+      id: uuid(),
       name: "",
       mobile: "",
       test: "",
@@ -25,10 +27,11 @@ function App() {
   });
 
   const handleAddRow = () => {
-    const item = {};
+    const item = {id: uuid()};
     fieldNames.map((fieldName) => (
       item[fieldName]=""
     ))
+    console.dir(rows)
     setRows([...rows, item])
     setEditedRowId(rows.length)
     setEditedRowValues(item)
