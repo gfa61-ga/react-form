@@ -1,16 +1,45 @@
 import React from "react";
 import Table from "./Table";
-import { useState, createContext } from "react";
+import { useReducer, createContext } from "react";
 import uuid from 'uuid/v4';
 
 export const MyAppContext = createContext();
 
+let editedRowValues, dispatchEditedRowValues,
+  rows, dispatchRows,
+  editedRowId, dispatchEditedRowId;
+
 function App() {
-  const [editedRowId, setEditedRowId] = useState("");
+  const fieldNames = Object.keys({
+    name: "",
+    mobile: "",
+    test: "",
+    ebg: "",
+  });
 
-  const [editedRowValues, setEditedRowValues] = useState({});
 
-  const [rows, setRows] = useState([{
+  const rowsReducer = (prevRows, action) => {
+    switch (action.type) {
+      case "SAVE_SPECIFIC_ROW":
+        prevRows[action.payload.idx] = {...editedRowValues};
+        return prevRows;
+      case "REMOVE_SPECIFIC_ROW":
+        prevRows.splice(action.payload.idx, 1);
+        return prevRows;
+      case "ADD_ROW":
+        const item = {id: uuid()};
+        fieldNames.map((fieldName) => (
+          item[fieldName]=""
+        ))
+        return [...prevRows, item];
+      case "REMOVE_ROW":
+        return prevRows.slice(0, -1);
+      default:
+        return prevRows;
+    }
+  };
+
+  [rows, dispatchRows] = useReducer(rowsReducer, [{
       id: uuid(),
       name: "",
       mobile: "",
@@ -19,29 +48,70 @@ function App() {
     }]
   );
 
-  const fieldNames = Object.keys({
-    name: "",
-    mobile: "",
-    test: "",
-    ebg: "",
-  });
+
+  const editedRowValuesReducer = (prevEditedRowValues, action) => {
+    switch (action.type) {
+      case "EDITED_ROW_CHANGE":
+        return {
+          ...prevEditedRowValues,
+          [action.payload.name]: action.payload.value
+        };
+      case "EDIT_SPECIFIC_ROW":
+        return rows[action.payload.idx];
+      case "SAVE_SPECIFIC_ROW":
+        return {};
+      case "ADD_ROW":
+        const item = {id: uuid()};
+        fieldNames.map((fieldName) => (
+          item[fieldName]=""
+        ))
+        return item;
+      case "REMOVE_ROW":
+        return {};
+      default:
+        return prevEditedRowValues;
+    }
+  };
+
+  [editedRowValues, dispatchEditedRowValues] = useReducer(editedRowValuesReducer, {});
+
+
+  const editedRowIdReducer = (prevEditedRowId, action) => {
+    switch (action.type) {
+      case "EDIT_SPECIFIC_ROW":
+        return action.payload.idx;
+      case "SAVE_SPECIFIC_ROW":
+        return "";
+      case "REMOVE_SPECIFIC_ROW":
+        return "";
+      case "ADD_ROW":
+        return rows.length;
+      case "REMOVE_ROW":
+        return "";
+      default:
+        return prevEditedRowId;
+    }
+  };
+
+  [editedRowId, dispatchEditedRowId] = useReducer(editedRowIdReducer, "");
+
+
+  const dispatch = action =>
+    [dispatchRows , dispatchEditedRowValues, dispatchEditedRowId].forEach(fn => fn(action));
+
 
   const handleAddRow = () => {
-    const item = {id: uuid()};
-    fieldNames.map((fieldName) => (
-      item[fieldName]=""
-    ))
-    console.dir(rows)
-    setRows([...rows, item])
-    setEditedRowId(rows.length)
-    setEditedRowValues(item)
+    dispatch({
+      type: "ADD_ROW"
+    });
   };
 
   const handleRemoveRow = () => {
-    setRows(rows.slice(0, -1))
-    setEditedRowId("")
-    setEditedRowValues({})
+    dispatch({
+      type: "REMOVE_ROW"
+    });
   };
+
 
   return (
     <div>
@@ -49,12 +119,11 @@ function App() {
         <div className="row clearfix">
           <div className="col-md-12 column">
 
-            <MyAppContext.Provider value={[
-              editedRowId, setEditedRowId,
-              editedRowValues, setEditedRowValues,
-              rows, setRows,
+            <MyAppContext.Provider value={{
+              state: {editedRowId, editedRowValues, rows},
+              dispatch,
               fieldNames
-            ]}>
+            }}>
               <Table />
             </MyAppContext.Provider>
 
@@ -64,6 +133,7 @@ function App() {
             >
               Add Row
             </button>
+
             <button
               onClick={handleRemoveRow}
               className="btn btn-danger float-right"

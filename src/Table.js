@@ -3,41 +3,40 @@ import { MyAppContext } from "./App"
 
 function Table() {
 
-  const [
-    editedRowId, setEditedRowId,
-    editedRowValues, setEditedRowValues,
-    rows, setRows,
-    fieldNames
-  ] = useContext(MyAppContext);
+  const { state, dispatch, fieldNames } = useContext(MyAppContext);
+
+  const { editedRowId, editedRowValues, rows } = state;
 
   const handleEditedRowChange = () => e => {
-    const { name, value } = e.target;
-    setEditedRowValues({
-      ...editedRowValues,
-      [name]: value
+    dispatch({
+      type: "EDITED_ROW_CHANGE",
+      payload: {
+        name: e.target.name,
+        value: e.target.value
+      }
     });
   };
 
   const handleEditSpecificRow = (idx) => () => {
-    const editedRowId = idx
-    setEditedRowId(editedRowId)
-    setEditedRowValues(rows[idx])
-  }
+    dispatch({
+      type: "EDIT_SPECIFIC_ROW",
+      payload: {idx}
+    });
+  };
 
-  const handleSaveSpecificRow = idx => e => {
-    const currentRows = [...rows];
-    currentRows[idx] = {...editedRowValues};
-    setRows(currentRows)
-    setEditedRowId("")
-    setEditedRowValues({})
+  const handleSaveSpecificRow = (idx) => () => {
+    dispatch({
+      type: "SAVE_SPECIFIC_ROW",
+      payload: {idx}
+    });
   };
 
   const handleRemoveSpecificRow = (idx) => () => {
-    const currentRows = [...rows];
-    currentRows.splice(idx, 1);
-    setRows(currentRows)
-    setEditedRowId("")
-  }
+    dispatch({
+      type: "REMOVE_SPECIFIC_ROW",
+      payload: {idx}
+    });
+  };
 
   return (
     <table
@@ -83,6 +82,7 @@ function Table() {
                   <input
                     disabled
                     value={rows[idx][fieldName]}
+                    onChange={()=>{}}
                     className="form-control"
                   />
                 )}
