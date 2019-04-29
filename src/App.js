@@ -19,13 +19,14 @@ function App() {
 
 
   const rowsReducer = (prevRows, action) => {
+    let currentRows = [...prevRows];
     switch (action.type) {
       case "SAVE_SPECIFIC_ROW":
-        prevRows[action.payload.idx] = {...editedRowValues};
-        return prevRows;
+        currentRows[action.payload.idx] = {...editedRowValues};
+        return currentRows;
       case "REMOVE_SPECIFIC_ROW":
-        prevRows.splice(action.payload.idx, 1);
-        return prevRows;
+        currentRows.splice(action.payload.idx, 1);
+        return currentRows;
       case "ADD_ROW":
         const item = {id: uuid()};
         fieldNames.map((fieldName) => (
@@ -73,7 +74,10 @@ function App() {
     }
   };
 
-  [editedRowValues, dispatchEditedRowValues] = useReducer(editedRowValuesReducer, {});
+  [editedRowValues, dispatchEditedRowValues] = useReducer(
+    editedRowValuesReducer,
+    {}
+  );
 
 
   const editedRowIdReducer = (prevEditedRowId, action) => {
@@ -96,8 +100,11 @@ function App() {
   [editedRowId, dispatchEditedRowId] = useReducer(editedRowIdReducer, "");
 
 
-  const dispatch = action =>
-    [dispatchRows , dispatchEditedRowValues, dispatchEditedRowId].forEach(fn => fn(action));
+  const dispatch = action =>[
+    dispatchRows,
+    dispatchEditedRowValues,
+    dispatchEditedRowId
+  ].forEach(fn => fn(action));
 
 
   const handleAddRow = () => {
