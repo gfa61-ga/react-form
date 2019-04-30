@@ -89,7 +89,7 @@ function App() {
       case "REMOVE_SPECIFIC_ROW":
         return "";
       case "ADD_ROW":
-        return rows.length;
+        return rows.length-1;
       case "REMOVE_ROW":
         return "";
       default:
