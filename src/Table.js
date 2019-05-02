@@ -20,21 +20,28 @@ function Table() {
   const handleEditSpecificRow = (idx) => () => {
     dispatch({
       type: "EDIT_SPECIFIC_ROW",
-      payload: {idx}
+      payload: {
+        idx
+      }
     });
   };
 
   const handleSaveSpecificRow = (idx) => () => {
     dispatch({
       type: "SAVE_SPECIFIC_ROW",
-      payload: {idx}
+      payload: {
+        idx,
+        editedRowValues
+      }
     });
   };
 
   const handleRemoveSpecificRow = (idx) => () => {
     dispatch({
       type: "REMOVE_SPECIFIC_ROW",
-      payload: {idx}
+      payload: {
+        idx
+      }
     });
   };
 
