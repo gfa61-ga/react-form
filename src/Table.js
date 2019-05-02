@@ -21,7 +21,8 @@ function Table() {
     dispatch({
       type: "EDIT_SPECIFIC_ROW",
       payload: {
-        idx
+        idx,
+        rowValues: rows[idx]
       }
     });
   };

@@ -26,7 +26,7 @@ function App() {
         return currentRows;
       case "ADD_ROW":
         const item = {id: uuid()};
-        fieldNames.map((fieldName) => (
+        action.payload.fieldNames.map((fieldName) => (
           item[fieldName]=""
         ))
         return [...prevRows, item];
@@ -55,12 +55,12 @@ function App() {
           [action.payload.name]: action.payload.value
         };
       case "EDIT_SPECIFIC_ROW":
-        return rows[action.payload.idx];
+        return action.payload.rowValues;
       case "SAVE_SPECIFIC_ROW":
         return {};
       case "ADD_ROW":
         const item = {id: uuid()};
-        fieldNames.map((fieldName) => (
+        action.payload.fieldNames.map((fieldName) => (
           item[fieldName]=""
         ))
         return item;
@@ -86,7 +86,7 @@ function App() {
       case "REMOVE_SPECIFIC_ROW":
         return "";
       case "ADD_ROW":
-        return rows.length-1;
+        return action.payload.newRowId;
       case "REMOVE_ROW":
         return "";
       default:
@@ -106,7 +106,11 @@ function App() {
 
   const handleAddRow = () => {
     dispatch({
-      type: "ADD_ROW"
+      type: "ADD_ROW",
+      payload: {
+        newRowId: rows.length,
+        fieldNames
+      }
     });
   };
 
